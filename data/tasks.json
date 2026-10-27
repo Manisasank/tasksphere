@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1",
+    "title": "Review Emoolar Internship Requirements",
+    "description": "Verify HTML, CSS, JavaScript, Node.js, and MongoDB match.",
+    "category": "Work",
+    "priority": "High",
+    "status": "completed",
+    "dueDate": "2026-10-28",
+    "createdAt": "2026-10-27T08:24:09.911Z"
+  },
+  {
+    "id": "2",
+    "title": "Build Full Stack TaskSphere App",
+    "description": "Implement frontend UI, Node.js REST API, and MongoDB integration.",
+    "category": "Study",
+    "priority": "High",
+    "status": "completed",
+    "dueDate": "2026-10-29",
+    "createdAt": "2026-10-27T08:24:09.913Z"
+  },
+  {
+    "id": "3",
+    "title": "Push Project to GitHub",
+    "description": "Initialize Git repo and upload source code with clean documentation.",
+    "category": "Work",
+    "priority": "Medium",
+    "status": "pending",
+    "dueDate": "2026-10-30",
+    "createdAt": "2026-10-27T08:24:09.913Z"
+  }
+]

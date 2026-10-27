@@ -1,0 +1,27 @@
+{
+  "name": "tasksphere-app",
+  "version": "1.0.0",
+  "description": "Full-Stack Task & Workflow Management Application (Node.js, Express, MongoDB/Storage, Vanilla JS, HTML5, Tailwind CSS)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node test-api.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "rest-api",
+    "fullstack",
+    "javascript"
+  ],
+  "author": "Y. Mani Sasank Reddy",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mongoose": "^8.8.1"
+  }
+}

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskSphere — Full-Stack Workflow Manager</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
+
+  <!-- Navigation Bar -->
+  <header class="bg-indigo-600 text-white shadow-md sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <i class="ph-bold ph-check-square-offset text-2xl text-indigo-200"></i>
+        <h1 class="text-xl font-bold tracking-tight">TaskSphere</h1>
+        <span class="bg-indigo-700 text-indigo-200 text-xs px-2.5 py-0.5 rounded-full font-medium">Full Stack App</span>
+      </div>
+      <div class="flex items-center space-x-3">
+        <span id="storageBadge" class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-500 text-white">
+          Checking Backend...
+        </span>
+        <button id="openModalBtn" class="bg-white text-indigo-600 hover:bg-indigo-50 px-4 py-2 rounded-lg font-semibold text-sm shadow transition flex items-center space-x-1">
+          <i class="ph-bold ph-plus"></i>
+          <span>New Task</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-6">
+
+    <!-- Metrics Cards / Analytics -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+        <div class="p-3 bg-blue-50 text-blue-600 rounded-lg text-2xl">
+          <i class="ph-bold ph-tray"></i>
+        </div>
+        <div>
+          <p class="text-xs uppercase font-semibold text-slate-500">Total Tasks</p>
+          <p id="statTotal" class="text-2xl font-bold text-slate-900">0</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+        <div class="p-3 bg-amber-50 text-amber-600 rounded-lg text-2xl">
+          <i class="ph-bold ph-clock-countdown"></i>
+        </div>
+        <div>
+          <p class="text-xs uppercase font-semibold text-slate-500">Pending</p>
+          <p id="statPending" class="text-2xl font-bold text-slate-900">0</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+        <div class="p-3 bg-purple-50 text-purple-600 rounded-lg text-2xl">
+          <i class="ph-bold ph-arrows-clockwise"></i>
+        </div>
+        <div>
+          <p class="text-xs uppercase font-semibold text-slate-500">In Progress</p>
+          <p id="statInProgress" class="text-2xl font-bold text-slate-900">0</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg text-2xl">
+          <i class="ph-bold ph-check-circle"></i>
+        </div>
+        <div>
+          <p class="text-xs uppercase font-semibold text-slate-500">Completed</p>
+          <p id="statCompleted" class="text-2xl font-bold text-slate-900">0</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controls: Search & Filters -->
+    <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-center">
+      <div class="relative w-full md:w-80">
+        <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Search tasks by title or details..." 
+          class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div class="flex flex-wrap gap-2 w-full md:w-auto items-center justify-start md:justify-end">
+        <select id="statusFilter" class="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="all">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+
+        <select id="categoryFilter" class="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="all">All Categories</option>
+          <option value="General">General</option>
+          <option value="Work">Work</option>
+          <option value="Study">Study</option>
+          <option value="Personal">Personal</option>
+        </select>
+
+        <select id="priorityFilter" class="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="all">All Priorities</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Tasks Grid / List Container -->
+    <section>
+      <div id="loadingState" class="py-16 text-center text-slate-500">
+        <i class="ph-bold ph-spinner animate-spin text-3xl text-indigo-500 mb-2"></i>
+        <p class="text-sm font-medium">Fetching application data from REST API...</p>
+      </div>
+
+      <div id="tasksList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 hidden">
+        <!-- Tasks dynamically injected by app.js -->
+      </div>
+
+      <div id="emptyState" class="hidden py-16 text-center bg-white rounded-xl border border-dashed border-slate-300 p-8">
+        <i class="ph-bold ph-clipboard-text text-4xl text-slate-400 mb-2"></i>
+        <h3 class="text-lg font-semibold text-slate-700">No tasks found</h3>
+        <p class="text-sm text-slate-500 mt-1">Get started by creating a new task or clear your search filters.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal for Creating / Editing Task -->
+  <div id="taskModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden transform transition-all">
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+        <h3 id="modalTitle" class="text-lg font-bold text-slate-800">Add New Task</h3>
+        <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600 text-xl">
+          <i class="ph-bold ph-x"></i>
+        </button>
+      </div>
+
+      <form id="taskForm" class="p-6 space-y-4">
+        <input type="hidden" id="taskId">
+        
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Task Title *</label>
+          <input 
+            type="text" 
+            id="taskTitle" 
+            required 
+            placeholder="e.g., Integrate MongoDB schema with Mongoose" 
+            class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Description</label>
+          <textarea 
+            id="taskDescription" 
+            rows="3" 
+            placeholder="Provide context, acceptance criteria, or API notes..." 
+            class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Category</label>
+            <select id="taskCategory" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="General">General</option>
+              <option value="Work">Work</option>
+              <option value="Study">Study</option>
+              <option value="Personal">Personal</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Priority</label>
+            <select id="taskPriority" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="Low">Low</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Due Date</label>
+            <input 
+              type="date" 
+              id="taskDueDate" 
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+        </div>
+
+        <div class="pt-4 flex justify-end space-x-3 border-t border-slate-100">
+          <button type="button" id="cancelModalBtn" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow transition">
+            Save Task
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-xl text-sm transform transition-all translate-y-20 opacity-0 flex items-center space-x-2 z-50">
+    <i id="toastIcon" class="ph-bold ph-check text-emerald-400"></i>
+    <span id="toastMessage">Success</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
+      <p>Built by <strong>Y. Mani Sasank Reddy</strong> • Full Stack Architecture (Node.js • Express • MongoDB • JS)</p>
+      <p class="mt-1 sm:mt-0">Chaitanya Deemed to be University</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
